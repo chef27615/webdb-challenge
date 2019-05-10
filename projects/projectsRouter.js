@@ -1,5 +1,7 @@
 const projectsRouter = require('express').Router();
 const knex = require('knex');
+const knex_populate = require('knex-populate');
+
 
 const knexConfig = require('../knexfile');
 
@@ -26,27 +28,24 @@ projectsRouter.post('/', (req, res) => {
     })
     .catch(err => {res.status(500).json(err)})
 })
+
+// projectsRouter.get('/:id', (req, res) => {
+//     db('projects')
+//     .where({id:req.params.id})
+//     .first()
+//     .then(project => {
+//         project ? res.status(200).json(project) : res.status(404).json({ message:"can not locate project"})
+//     })
+//     .catch(err => {res.status(500).json(err)})
+// })
+
+
 projectsRouter.get('/:id', (req, res) => {
-    db('projects')
-    .where({id:req.params.id})
-    .first()
-    .then(project => {
-        project ? res.status(200).json(project) : res.status(404).json({ message:"can not locate project"})
-    })
-    .catch(err => {res.status(500).json(err)})
-})
-
-
-projectsRouter.get('/:id/actions', (req, res) => {
-    db('projects')
-    .join('actions', 'actions.project_id', 'project.id')
-    .select('actions.id', 'actions.description')
-    .where('project_id', req.params.id)
-    .first()
-    .then(projects => {
-        res.status(200).json(projects)
-    })
-    .catch(err => {res.status(500).json(err)})
+    knex_populate(db, 'projects')
+    .findById(req.params.id)
+    .populate('actions', 'project_id', 'project')
+    .exec()
+    .then(results => res.send(results));
 })
 
 
