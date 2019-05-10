@@ -32,7 +32,7 @@ projectsRouter.post('/', (req, res) => {
 projectsRouter.get('/:id', (req, res) => {
     knex_populate(db, 'projects')
     .findById(req.params.id)
-    .populate('actions', 'project_id', 'project')
+    .populate('actions', 'project_id', 'actions')
     .exec()
     .then(project => {
         project ? res.status(200).json(project) : res.status(404).json({message:"some required fields need input"})
