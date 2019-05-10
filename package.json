@@ -1,0 +1,19 @@
+{
+  "name": "webdb-challenge",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/chef27615/webdb-challenge.git",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon index.js"
+  },
+  "dependencies": {
+    "knex": "^0.16.5",
+    "sqlite": "^3.0.3"
+  },
+  "devDependencies": {
+    "knex-cleaner": "^1.1.4",
+    "nodemon": "^1.19.0"
+  }
+}
