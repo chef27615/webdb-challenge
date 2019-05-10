@@ -29,26 +29,36 @@ projectsRouter.post('/', (req, res) => {
     .catch(err => {res.status(500).json(err)})
 })
 
-// projectsRouter.get('/:id', (req, res) => {
-//     db('projects')
-//     .where({id:req.params.id})
-//     .first()
-//     .then(project => {
-//         project ? res.status(200).json(project) : res.status(404).json({ message:"can not locate project"})
-//     })
-//     .catch(err => {res.status(500).json(err)})
-// })
-
-
 projectsRouter.get('/:id', (req, res) => {
     knex_populate(db, 'projects')
     .findById(req.params.id)
     .populate('actions', 'project_id', 'project')
     .exec()
-    .then(results => res.send(results));
+    .then(project => {
+        project ? res.status(200).json(project) : res.status(404).json({message:"some required fields need input"})
+    })
+    .catch(err=>{res.status(500).json(err)})
+    // .then(results => res.send(results).first());
 })
 
+projectsRouter.delete('/:id', (req, res) => {
+    db('projects')
+    .where({id:req.params.id})
+    .del()
+    .then(count=> {
+        count > 0 ? res.status(200).json({ message: "project deleted"}) : res.status(404).json({ message:"can not delete a none exist project"})
+    })
+    .catch(err => {res.status(500).json(err)})
+})
 
+projectsRouter.put('/:id', (req, res) => {
+    db('projects')
+    .where({id:req.params.id})
+    .update(req.body)
+    .then(count => {
+        count > 0 ? db('projects').where({id:req.params.id}).first().then(project => {res.status(200).json(project)}) : res.status(404).json({message:"can not update a none project"})
+    })
+})
 
 projectsRouter.use((req, res, next) => {
     res.status(404).json({ message:"in projectRouter, no projects here"})
